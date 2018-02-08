@@ -22,7 +22,7 @@ def create_app():
         # print('中间件2')
         return response
 
-    from main import rbac
+    from applications import rbac
     app.register_blueprint(rbac.rbac)
 
     return app

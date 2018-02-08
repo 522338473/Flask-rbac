@@ -1,10 +1,10 @@
 from flask_script import Manager, Server
 
-from main import create_app
-from main.rbac.middlewares import RbacMiddleware
+from applications import create_app
+from applications.rbac.middlewares import RbacMiddleware
 
 app = create_app()
-app = RbacMiddleware(app)
+RbacMiddleware(app)  # 为原app添加中间件
 
 # manager = Manager(app)  # type:Manager
 # manager.add_command("runserver", Server())
