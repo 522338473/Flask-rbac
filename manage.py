@@ -1,10 +1,10 @@
 from flask_script import Manager, Server
 
 from applications import create_app
-from applications.rbac.middlewares import RbacMiddleware
+from applications.rbac.utils import Auth
 
 app = create_app()
-RbacMiddleware(app)  # 为原app添加中间件
+Auth(app)  # 使用自定义插件添加一些功能
 
 # manager = Manager(app)  # type:Manager
 # manager.add_command("runserver", Server())
