@@ -5,10 +5,14 @@
 from flask import request, session, redirect, url_for, render_template, current_app
 
 from . import rbac
+from .models import User, sess
 
 
 @rbac.route('/')
 def test():
+    new_user = User(username='mark', password='abc123')
+    sess.add(new_user)
+    sess.commit()
     return '测试页面'
 
 
