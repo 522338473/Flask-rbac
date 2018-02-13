@@ -3,8 +3,9 @@ import datetime
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String, Text, DateTime
-from sqlalchemy.orm import relationship, sessionmaker
 from sqlalchemy import ForeignKey, UniqueConstraint, Index
+from sqlalchemy.orm import relationship, sessionmaker
+from sqlalchemy.schema import Table
 
 Base = declarative_base()
 
@@ -17,8 +18,8 @@ class Menu(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     title = Column(String(10))
 
-    # 反向查询
-    perm_groups = relationship('PermissonGroup', backref='permissiongroup')
+    # 双向关联
+    perm_groups = relationship('PermissionGroup', backref='menu')
 
     def __str__(self):
         return self.title
@@ -34,11 +35,17 @@ class PermissionGroup(Base):
     title = Column(String(10))
     menu_id = Column(Integer, ForeignKey('menu.id'))
 
-    # 反向查询
-    permissions = relationship('Permission', backref='permissions')
+    # 双向关联
+    permissions = relationship('Permission', backref='perm_group')
 
     def __str__(self):
         return self.title
+
+
+# 权限—角色关联表
+permission_role = Table('permission_role', Base.metadata,
+                        Column('permission_id', Integer, ForeignKey('permission.id')),
+                        Column('role_id', Integer, ForeignKey('role.id')))
 
 
 class Permission(Base):
@@ -57,8 +64,17 @@ class Permission(Base):
     # 自关联声明
     self_ref = relationship('Permission', remote_side=[id])
 
+    # 双向关联
+    roles = relationship('Role', secondary=permission_role, backref='permissions')
+
     def __str__(self):
         return self.title
+
+
+# 用户—角色关联表
+user_role = Table('user_role', Base.metadata,
+                  Column('user_id', Integer, ForeignKey('user.id')),
+                  Column('role_id', Integer, ForeignKey('role.id')))
 
 
 class Role(Base):
@@ -70,19 +86,11 @@ class Role(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(10))
 
+    # 双向关联
+    users = relationship('User', secondary=user_role, backref='roles')
+
     def __str__(self):
         return self.name
-
-
-class PermissionToRole(Base):
-    """
-    权限—角色关联表
-    """
-    __tablename__ = 'permission_role'
-
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    permission_id = Column(Integer, ForeignKey('permission.id'))
-    role_id = Column(Integer, ForeignKey('role.id'))
 
 
 class User(Base):
@@ -94,26 +102,16 @@ class User(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     username = Column(String(16))
     password = Column(String(16))
+    create_time = Column(DateTime, default=datetime.datetime.now)
 
     def __str__(self):
         return self.username
 
 
-class UserToRole(Base):
-    """
-    用户—角色关联表
-    """
-    __tablename__ = 'user_role'
-
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    user_id = Column(Integer, ForeignKey('user.id'))
-    role_id = Column(Integer, ForeignKey('role.id'))
-
-
-# 初始化数据库连接
 engine = create_engine('mysql+pymysql://root:@localhost:3306/flaskrbac')
 DBSession = sessionmaker(bind=engine)
 sess = DBSession()
 
 # 在数据库中创建表
 # Base.metadata.create_all(engine)
+Base.metadata.drop_all(engine)

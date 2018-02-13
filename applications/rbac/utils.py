@@ -17,7 +17,7 @@ class Auth(object):
 
     def init_app(self, app):
         app.auth_manager = self
-        app.before_request(self.check_login)
+        # app.before_request(self.check_login)
         # app.context_processor(self.auth_context_processor)
 
     def auth_context_processor(self):

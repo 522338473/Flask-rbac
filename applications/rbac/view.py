@@ -10,9 +10,9 @@ from .models import User, sess
 
 @rbac.route('/')
 def test():
-    new_user = User(username='mark', password='abc123')
-    sess.add(new_user)
-    sess.commit()
+    # new_user = User(username='mark', password='abc123')
+    # sess.add(new_user)
+    # sess.commit()
     return '测试页面'
 
 
@@ -22,6 +22,13 @@ def login():
         return render_template('login.html')
     else:
         if '用户名密码正确':
+            session['user'] = 'mark'
             return redirect(url_for('rbac.test'))
         else:
             return '登录失败'
+
+
+@rbac.route('/logout')
+def logout():
+    session.clear()
+    return
