@@ -4,15 +4,28 @@
 
 from flask import request, session, redirect, url_for, render_template, current_app
 
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker, scoped_session
+from sqlalchemy.sql import text
+
+from flask_sqlalchemy import SQLAlchemy
+
 from . import rbac
-from .models import User, sess
+from . import models
 
 
 @rbac.route('/')
 def test():
-    # new_user = User(username='mark', password='abc123')
-    # sess.add(new_user)
-    # sess.commit()
+    engine = create_engine('mysql+pymysql://root:@localhost:3306/flaskrbac?charset=utf8')
+    DBSession = sessionmaker(bind=engine)
+    db_sess = DBSession()
+
+    # new_user = models.User(username='mark', password='abc123')
+    # db_sess.add(new_user)
+    # db_sess.commit()
+
+    db_sess.close()
+
     return '测试页面'
 
 

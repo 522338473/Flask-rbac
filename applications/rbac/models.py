@@ -18,7 +18,7 @@ class Menu(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     title = Column(String(10))
 
-    # 双向关联
+    # 双向关联，用于跨表查询
     perm_groups = relationship('PermissionGroup', backref='menu')
 
     def __str__(self):
@@ -35,7 +35,7 @@ class PermissionGroup(Base):
     title = Column(String(10))
     menu_id = Column(Integer, ForeignKey('menu.id'))
 
-    # 双向关联
+    # 双向关联，用于跨表查询
     permissions = relationship('Permission', backref='perm_group')
 
     def __str__(self):
@@ -64,7 +64,7 @@ class Permission(Base):
     # 自关联声明
     self_ref = relationship('Permission', remote_side=[id])
 
-    # 双向关联
+    # 多对多的双向关联，用于跨表查询
     roles = relationship('Role', secondary=permission_role, backref='permissions')
 
     def __str__(self):
@@ -86,7 +86,7 @@ class Role(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(10))
 
-    # 双向关联
+    # 双向关联，用于跨表查询
     users = relationship('User', secondary=user_role, backref='roles')
 
     def __str__(self):
@@ -108,10 +108,9 @@ class User(Base):
         return self.username
 
 
-engine = create_engine('mysql+pymysql://root:@localhost:3306/flaskrbac')
-DBSession = sessionmaker(bind=engine)
-sess = DBSession()
+engine = create_engine('mysql+pymysql://root:@localhost:3306/flaskrbac?charset=utf8')
 
 # 在数据库中创建表
 # Base.metadata.create_all(engine)
-Base.metadata.drop_all(engine)
+# 在数据库中删除表
+# Base.metadata.drop_all(engine)
