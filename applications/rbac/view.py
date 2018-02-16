@@ -7,41 +7,64 @@ from flask import request, session, redirect, url_for, render_template, current_
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
 from sqlalchemy.sql import text
+from sqlalchemy import and_, or_
 
 from flask_sqlalchemy import SQLAlchemy
 
-from . import rbac
+from . import rbac  # 蓝图
 from . import models
+from . import forms
+from .service import init_permission
 
 
 @rbac.route('/')
-def test():
-    engine = create_engine('mysql+pymysql://root:@localhost:3306/flaskrbac?charset=utf8')
-    DBSession = sessionmaker(bind=engine)
-    db_sess = DBSession()
-
+def index():
+    # engine = create_engine('mysql+pymysql://root:@localhost:3306/flaskrbac?charset=utf8')
+    # DBSession = sessionmaker(bind=engine)
+    # db_sess = DBSession()
+    #
     # new_user = models.User(username='mark', password='abc123')
     # db_sess.add(new_user)
     # db_sess.commit()
+    #
+    # db_sess.close()
 
-    db_sess.close()
+    return render_template('index.html')
 
-    return '测试页面'
+
+@rbac.route('/test')
+def test():
+    return '测试'
 
 
 @rbac.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'GET':
-        return render_template('login.html')
+        login_form = forms.LoginForm()
+        return render_template('login.html', login_form=login_form)
     else:
-        if '用户名密码正确':
-            session['user'] = 'mark'
-            return redirect(url_for('rbac.test'))
+        login_form = forms.LoginForm(request.form)
+        if not login_form.validate():
+            return render_template('login.html', login_form=login_form)
         else:
-            return '登录失败'
+            username = login_form.data.get('username')
+            password = login_form.data.get('password')
+
+            engine = create_engine('mysql+pymysql://root:@localhost:3306/flaskrbac?charset=utf8')
+            DBSession = sessionmaker(bind=engine)
+            db_sess = DBSession()
+
+            user_obj = db_sess.query(models.User).filter(
+                and_(models.User.username == username, models.User.password == password)).first()
+
+            if not user_obj:
+                return redirect(url_for('rbac.login'))
+            else:
+                init_permission(user_obj)
+                return redirect(url_for('rbac.index'))
 
 
 @rbac.route('/logout')
 def logout():
     session.clear()
-    return
+    return redirect(url_for('rbac.login'))

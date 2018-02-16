@@ -1,7 +1,7 @@
 from flask_script import Manager, Server
 
 from applications import create_app
-from applications.rbac.utils import Auth
+from applications.rbac.plugins import Auth
 
 app = create_app()
 Auth(app)  # 使用自定义插件添加一些功能

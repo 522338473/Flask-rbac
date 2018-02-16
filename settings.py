@@ -21,4 +21,9 @@ class ProConfig(BaseConfig):
     """
     正式配置
     """
-    PRO = True
+    VALID_URLS = [
+        '/favicon.ico',
+        '/static/.*',
+        '/login.*',
+        '/logout',
+    ]

@@ -114,3 +114,8 @@ engine = create_engine('mysql+pymysql://root:@localhost:3306/flaskrbac?charset=u
 # Base.metadata.create_all(engine)
 # 在数据库中删除表
 # Base.metadata.drop_all(engine)
+
+
+# 笔记：
+# 一对一关联的时候，在relationship里设置uselist为False
+# 在Association-object模式中，级联删除要设置viewonly为False，待研究

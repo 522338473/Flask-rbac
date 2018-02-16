@@ -6,31 +6,12 @@
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="{{ url_for('static',filename='bootstrap/css/bootstrap.min.css') }}">
-    <title>登录</title>
+    <title>首页</title>
 </head>
-
 <body>
 <div class="container">
-    <form method="post" class="form-horizontal">
-        <div class="form-group">
-            {{ login_form.username.label }}
-            <div>
-                {{ login_form.username }}
-            </div>
-            {{ login_form.username.errors[0] }}
-        </div>
-
-        <div class="form-group">
-            {{ login_form.password.label }}
-            <div>
-                {{ login_form.password }}
-            </div>
-            {{ login_form.password.errors[0] }}
-        </div>
-
-        <input type="submit" value="登录" class="btn btn-primary">
-
-    </form>
+    <h1>欢迎，{{ session.get('userinfo').get('username') }}</h1>
+    <h3><a href="{{ url_for('rbac.logout') }}">注销</a></h3>
 </div>
 
 
