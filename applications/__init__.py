@@ -12,17 +12,6 @@ def create_app():
 
     # print(app.config)
 
-    @app.before_request
-    def auth():
-        # print('中间件1')
-        pass
 
-    @app.after_request
-    def after_auth(response):
-        # print('中间件2')
-        return response
-
-    from applications import rbac
-    app.register_blueprint(rbac.rbac)
 
     return app

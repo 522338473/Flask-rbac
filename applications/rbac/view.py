@@ -19,13 +19,23 @@ from .service import init_permission
 
 @rbac.route('/')
 def index():
+    # # 创建用户
     # engine = create_engine('mysql+pymysql://root:@localhost:3306/flaskrbac?charset=utf8')
     # DBSession = sessionmaker(bind=engine)
     # db_sess = DBSession()
     #
-    # new_user = models.User(username='mark', password='abc123')
+    # new_user = models.User(username='bob', password='abc123')
     # db_sess.add(new_user)
     # db_sess.commit()
+    #
+    # db_sess.close()
+
+    # # 测试
+    # engine = create_engine('mysql+pymysql://root:@localhost:3306/flaskrbac?charset=utf8')
+    # DBSession = sessionmaker(bind=engine)
+    # db_sess = DBSession()
+    #
+    # user_obj = db_sess.query(models.User).filter_by(username=session.get('userinfo').get('username')).first()
     #
     # db_sess.close()
 

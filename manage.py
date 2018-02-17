@@ -1,9 +1,14 @@
 from flask_script import Manager, Server
 
 from applications import create_app
-from applications.rbac.plugins import Auth
 
 app = create_app()
+
+from applications.rbac.plugins import Auth
+from applications import rbac
+
+app.register_blueprint(rbac.rbac)
+
 Auth(app)  # 使用自定义插件添加一些功能
 
 # manager = Manager(app)  # type:Manager

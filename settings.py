@@ -1,25 +1,28 @@
 class BaseConfig(object):
+    """
+    通用配置
+    """
     SECRET_KEY = 'sls(al1xx4saf~!=dljus'
     SESSION_REFRESH_EACH_REQUEST = True
 
 
 class TestConfig(BaseConfig):
     """
-    测试配置
+    测试环境配置
     """
     Test = True
 
 
 class DevConfig(BaseConfig):
     """
-    开发配置
+    开发环境配置
     """
     DEV = True
 
 
 class ProConfig(BaseConfig):
     """
-    正式配置
+    正式环境配置
     """
     VALID_URLS = [
         '/favicon.ico',
@@ -27,3 +30,6 @@ class ProConfig(BaseConfig):
         '/login.*',
         '/logout',
     ]
+
+    # PERM_INFO_DICT = 'perm_info_dict'
+    # PERM_SIDE_LIST = 'perm_side_list'
