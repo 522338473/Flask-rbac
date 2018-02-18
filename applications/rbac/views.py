@@ -50,8 +50,7 @@ def login():
         return render_template('login.html', login_form=login_form)
     else:
         login_form = forms.LoginForm(request.form)
-        # if not login_form.validate_on_submit():
-        if not login_form.validate():
+        if not login_form.validate_on_submit():
             return render_template('login.html', login_form=login_form)
         else:
             username = login_form.data.get('username')

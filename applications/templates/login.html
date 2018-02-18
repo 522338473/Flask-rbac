@@ -4,6 +4,7 @@
 
 {% block content %}
     <form method="post" class="form-horizontal">
+        {{ login_form.csrf_token }}
         <div class="form-group">
             {{ login_form.username.label }}
             <div>
