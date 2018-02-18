@@ -1,20 +1,13 @@
 """
 测试rbac
 """
-
-from flask import request, session, redirect, url_for, render_template, current_app
-
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, scoped_session
-from sqlalchemy.sql import text
-from sqlalchemy import and_, or_
-
-from flask_sqlalchemy import SQLAlchemy
+from flask import request, session, redirect, url_for, render_template
+from sqlalchemy import and_
 
 from . import rbac  # 蓝图
-from . import models
-from . import forms
+from . import models, forms
 from .service import init_permission
+from .database import db_sess
 
 # 数据库的相关配置，自行添加格式如下的信息：sql_info = ['user','password','ip','port','数据库名']
 from applications.mysql_config import sql_info
@@ -57,15 +50,12 @@ def login():
         return render_template('login.html', login_form=login_form)
     else:
         login_form = forms.LoginForm(request.form)
+        # if not login_form.validate_on_submit():
         if not login_form.validate():
             return render_template('login.html', login_form=login_form)
         else:
             username = login_form.data.get('username')
             password = login_form.data.get('password')
-
-            engine = create_engine('mysql+pymysql://{}:{}@{}:{}/{}?charset=utf8'.format(*sql_info))
-            DBSession = sessionmaker(bind=engine)
-            db_sess = DBSession()
 
             user_obj = db_sess.query(models.User).filter(
                 and_(models.User.username == username, models.User.password == password)).first()
@@ -88,16 +78,16 @@ def logout():
 
 @rbac.route('/test')
 def test():
-    # 创建用户
-    engine = create_engine('mysql+pymysql://{}:{}@{}:{}/{}?charset=utf8'.format(*sql_info))
-    DBSession = sessionmaker(bind=engine)
-    db_sess = DBSession()
-
-    new_user = models.User(username='test', password='abc123')
-    db_sess.add(new_user)
-    db_sess.commit()
-
-    db_sess.close()
+    # # 创建用户
+    # engine = create_engine('mysql+pymysql://{}:{}@{}:{}/{}?charset=utf8'.format(*sql_info))
+    # DBSession = sessionmaker(bind=engine)
+    # db_sess = DBSession()
+    #
+    # new_user = models.User(username='test', password='abc123')
+    # db_sess.add(new_user)
+    # db_sess.commit()
+    #
+    # db_sess.close()
 
     return '测试'
 
@@ -106,15 +96,8 @@ def test():
 @rbac.route('/userinfo')
 def userinfo():
     codes = Codes(session.get('PERM_CODES_LIST'))
-
-    engine = create_engine('mysql+pymysql://{}:{}@{}:{}/{}?charset=utf8'.format(*sql_info))
-    DBSession = sessionmaker(bind=engine)
-    db_sess = DBSession()
-
     user_list = db_sess.query(models.User).all()
-
     res = render_template('userinfo.html', codes=codes, user_list=user_list)
-    db_sess.close()
     return res
 
 
@@ -135,14 +118,8 @@ def user_edit(id):
 
 @rbac.route('/userinfo/del/<int:id>')
 def user_del(id):
-    # engine = create_engine('mysql+pymysql://{}:{}@{}:{}/{}?charset=utf8'.format(*sql_info))
-    # DBSession = sessionmaker(bind=engine)
-    # db_sess = DBSession()
-    #
     # db_sess.query(models.User).filter_by(id=id).delete()
-    #
     # db_sess.commit()
-    # db_sess.close()
     # return redirect(url_for('rbac.userinfo'))
 
     return '删除用户'

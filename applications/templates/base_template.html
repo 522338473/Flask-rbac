@@ -11,6 +11,7 @@
 </head>
 <body>
 
+<!-- 导航条 -->
 <nav class="navbar navbar-inverse">
     <div class="container">
         <!-- Brand and toggle get grouped for better mobile display -->
@@ -44,10 +45,16 @@
     </div><!-- /.container-fluid -->
 </nav>
 
+<!-- 菜单栏 -->
+<div>
 
+</div>
+
+<!-- 页面主体 -->
 <div class="container">
     {% block content %}{% endblock %}
 </div>
+
 <script src="{{ url_for('static',filename='jquery-3.2.1.min.js') }}"></script>
 <script src="{{ url_for('static',filename='bootstrap/js/bootstrap.min.js') }}"></script>
 {% block my_js %}{% endblock %}

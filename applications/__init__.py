@@ -1,17 +1,17 @@
-from flask import Flask, request, session, redirect, url_for
+from flask import Flask
 from werkzeug.routing import BaseConverter
+from . import rbac
+from .rbac.auth import Auth
 
 
 def create_app():
     app = Flask(__name__)  # type:Flask
-    app.debug = True
 
     # app.config.from_object('settings.TestConfig')
     # app.config.from_object('settings.DevConfig')
     app.config.from_object('settings.ProConfig')
 
-    # print(app.config)
-
-
+    app.register_blueprint(rbac.rbac)
+    Auth(app)  # 使用自定义插件添加一些功能
 
     return app

@@ -7,6 +7,7 @@ from sqlalchemy import ForeignKey, UniqueConstraint, Index
 from sqlalchemy.orm import relationship, sessionmaker
 from sqlalchemy.schema import Table
 
+# 数据库的相关配置，自行添加格式如下的信息：sql_info = ['user','password','ip','port','数据库名']
 from applications.mysql_config import sql_info
 
 Base = declarative_base()

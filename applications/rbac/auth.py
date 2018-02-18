@@ -19,7 +19,7 @@ class Auth(object):
         app.auth_manager = self
         app.before_request(self.check_login)
         app.before_request(self.check_permission)
-        # app.context_processor(self.auth_context_processor)
+        app.context_processor(self.auth_context_processor)
 
     def auth_context_processor(self):
         """
