@@ -103,3 +103,4 @@ ENV/
 #本地数据相关
 *.sqlite3
 /.idea
+mysql_config.py

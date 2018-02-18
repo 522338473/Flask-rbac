@@ -1,39 +1,20 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link rel="stylesheet" href="{{ url_for('static',filename='bootstrap/css/bootstrap.min.css') }}">
-    <title>首页</title>
-</head>
-<body>
-<div class="container">
+{% extends 'base_template.html' %}
+
+{% block title %}首页{% endblock %}
+
+{% block content %}
     <h1>主页</h1>
-
-    {% if session.get('userinfo') %}
-        <h2>欢迎，{{ session.get('userinfo').get('username') }}</h2>
-        <h3><a href="{{ url_for('rbac.logout') }}">注销</a></h3>
-    {% else %}
-        <h3><a href="{{ url_for('rbac.login') }}">登录</a></h3>
-    {% endif %}
-
 
     {% if session.get('userinfo') %}
         <p>显示所有权限</p>
         <ul>
             {% for url_info in urls_info %}
-                <li><a href="{{ url_info.get('url') }}">{{ url_info.get('url_title') }}</a></li>
+                <li>
+                    <a href="{{ url_info.get('url') }}">{{ url_info.get('url_title') }}</a>
+                    {{ url_info.get('url') }}
+                </li>
             {% endfor %}
         </ul>
     {% endif %}
 
-</div>
-
-
-<script src="{{ url_for('static',filename='jquery-3.2.1.min.js') }}"></script>
-<script src="{{ url_for('static',filename='bootstrap/js/bootstrap.min.js') }}"></script>
-
-</body>
-</html>
+{% endblock content %}

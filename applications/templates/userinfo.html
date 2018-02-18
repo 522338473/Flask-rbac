@@ -1,0 +1,43 @@
+{% extends 'base_template.html' %}
+
+{% block title %}用户列表{% endblock %}
+
+{% block content %}
+    {% if codes.has_add() %}
+        <a href="{{ url_for('rbac.user_add') }}" class="btn btn-primary">添加用户</a>
+    {% endif %}
+    <p></p>
+    <table class="table table-bordered table-striped table-hover">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>用户名</th>
+            <th>角色</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        {% for user in user_list %}
+            <tr>
+                <td>{{ user.id }}</td>
+                <td>{{ user.username }}</td>
+                <td>
+                    {% for role in user.roles %}
+                        <span>{{ role }}</span>
+                    {% endfor %}
+                </td>
+                <td>
+                    {% if codes.has_edit() %}
+                        <span><a href="{{ url_for('rbac.user_edit',id=user.id) }}">编辑</a></span>
+                    {% endif %}
+                    {% if codes.has_del() %}
+                        <span><a href="{{ url_for('rbac.user_del',id=user.id) }}">删除</a></span>
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+{% endblock content %}

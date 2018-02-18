@@ -7,6 +7,8 @@ from sqlalchemy import ForeignKey, UniqueConstraint, Index
 from sqlalchemy.orm import relationship, sessionmaker
 from sqlalchemy.schema import Table
 
+from applications.mysql_config import sql_info
+
 Base = declarative_base()
 
 
@@ -107,8 +109,7 @@ class User(Base):
     def __str__(self):
         return self.username
 
-
-engine = create_engine('mysql+pymysql://root:@localhost:3306/flaskrbac?charset=utf8')
+# engine = create_engine('mysql+pymysql://{}:{}@{}:{}/{}?charset=utf8'.format(*sql_info))
 
 # 在数据库中创建表
 # Base.metadata.create_all(engine)
