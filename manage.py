@@ -4,7 +4,7 @@ from applications import create_app
 
 app = create_app()
 
-from applications.rbac.plugins import Auth
+from applications.rbac.auth import Auth
 from applications import rbac
 
 app.register_blueprint(rbac.rbac)

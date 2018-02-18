@@ -19,6 +19,16 @@ from .service import init_permission
 
 @rbac.route('/')
 def index():
+    userinfo = session.get('userinfo')
+    if userinfo:
+        urls_info = session.get('PERM_SIDE_LIST')
+        return render_template('index.html', urls_info=urls_info)
+    else:
+        return render_template('index.html')
+
+
+@rbac.route('/test')
+def test():
     # # 创建用户
     # engine = create_engine('mysql+pymysql://root:@localhost:3306/flaskrbac?charset=utf8')
     # DBSession = sessionmaker(bind=engine)
@@ -30,25 +40,14 @@ def index():
     #
     # db_sess.close()
 
-    # # 测试
-    # engine = create_engine('mysql+pymysql://root:@localhost:3306/flaskrbac?charset=utf8')
-    # DBSession = sessionmaker(bind=engine)
-    # db_sess = DBSession()
-    #
-    # user_obj = db_sess.query(models.User).filter_by(username=session.get('userinfo').get('username')).first()
-    #
-    # db_sess.close()
-
-    return render_template('index.html')
-
-
-@rbac.route('/test')
-def test():
     return '测试'
 
 
 @rbac.route('/login', methods=['GET', 'POST'])
 def login():
+    """
+    登录
+    """
     if request.method == 'GET':
         login_form = forms.LoginForm()
         return render_template('login.html', login_form=login_form)
@@ -76,5 +75,8 @@ def login():
 
 @rbac.route('/logout')
 def logout():
+    """
+    注销
+    """
     session.clear()
     return redirect(url_for('rbac.login'))

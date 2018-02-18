@@ -29,6 +29,8 @@ class ProConfig(BaseConfig):
         '/static/.*',
         '/login.*',
         '/logout',
+        '/',
+        '/test',
     ]
 
     # PERM_INFO_DICT = 'perm_info_dict'

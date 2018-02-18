@@ -10,8 +10,25 @@
 </head>
 <body>
 <div class="container">
-    <h1>欢迎，{{ session.get('userinfo').get('username') }}</h1>
-    <h3><a href="{{ url_for('rbac.logout') }}">注销</a></h3>
+    <h1>主页</h1>
+
+    {% if session.get('userinfo') %}
+        <h2>欢迎，{{ session.get('userinfo').get('username') }}</h2>
+        <h3><a href="{{ url_for('rbac.logout') }}">注销</a></h3>
+    {% else %}
+        <h3><a href="{{ url_for('rbac.login') }}">登录</a></h3>
+    {% endif %}
+
+
+    {% if session.get('userinfo') %}
+        <p>显示所有权限</p>
+        <ul>
+            {% for url_info in urls_info %}
+                <li><a href="{{ url_info.get('url') }}">{{ url_info.get('url_title') }}</a></li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
 </div>
 
 
