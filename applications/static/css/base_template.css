@@ -1,0 +1,36 @@
+/*去除导航条圆角效果*/
+.navbar {
+    -webkit-border-radius: 0 !important;
+    -moz-border-radius: 0 !important;
+    border-radius: 0 !important;
+}
+
+.container-fluid {
+    padding: 0 20px;
+}
+
+/*侧边栏按钮的一些效果*/
+.sidebar ul {
+    list-style: none;
+    margin-bottom: 1px;
+    padding-left: 0;
+}
+
+.sidebar .btn.title {
+    width: 100%;
+    text-align: left;
+    font-size: 18px;
+}
+
+.sidebar .list {
+    margin-left: 50px;
+    font-size: 16px;
+}
+
+.sidebar .list a {
+    font-size: 17px;
+}
+
+.sidebar .list a.active {
+    color: tomato;
+}

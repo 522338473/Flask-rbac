@@ -1,0 +1,52 @@
+{% extends 'base_template.html' %}
+
+<!-- 页面主体 -->
+{% block main %}
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="sidebar col-sm-3 col-md-2">
+                {% for dict_item in get_side_dict().values() %}
+                    <ul class="item">
+                        <btn class="title btn btn-info">{{ dict_item.get('menu_title') }}</btn>
+
+                        {#下面的代码有部分重复，但是考虑到文档的排版，不对其做删改#}
+                        {% if dict_item.get('menu_active') %}
+                            <div class="list">
+                                {% for url_dict in dict_item.get('urls_info') %}
+                                    {% if  url_dict.get('active') %}
+                                        <li><a href="{{ url_dict.get('url') }}"
+                                               class="active">{{ url_dict.get('url_title') }}</a>
+                                        </li>
+                                    {% else %}
+                                        <li><a href="{{ url_dict.get('url') }}">{{ url_dict.get('url_title') }}</a>
+                                        </li>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <div class="list hidden">
+                                {% for url_dict in dict_item.get('urls_info') %}
+                                    {% if  url_dict.active %}
+                                        <li><a href="{{ url_dict.get('url') }}"
+                                               class="active">{{ url_dict.get('url_title') }}</a>
+                                        </li>
+                                    {% else %}
+                                        <li><a href="{{ url_dict.get('url') }}">{{ url_dict.get('url_title') }}</a>
+                                        </li>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+
+                    </ul>
+                {% endfor %}
+            </div>
+
+            <div class="body col-sm-9 col-md-10">
+                {% block content %}{# 主体内容 #}{% endblock %}
+            </div>
+        </div>
+    </div>
+
+{% endblock main %}

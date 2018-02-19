@@ -27,3 +27,33 @@ LoginForm = model_form(models.User, base_class=FlaskForm, db_session=db_sess, on
 
                            }
                        })
+
+UserForm = model_form(models.User, base_class=FlaskForm, db_session=db_sess, exclude=['create_time'],
+                      field_args={
+                          "username": {
+                              "label": '用户名',
+                              "validators": [
+                                  validators.DataRequired(message='用户名不能为空'),
+                                  validators.Length(min=4, max=16, message='密码长度必须大于%(min)d且小于%(max)d')
+                              ],
+                              "render_kw": {'class': 'form-control'}
+                          },
+                          "password": {
+                              "label": '密码',
+                              "widget": widgets.PasswordInput(),
+                              "validators": [
+                                  validators.DataRequired(message='密码不能为空'),
+                                  validators.Length(min=6, max=16, message='密码长度必须大于%(min)d且小于%(max)d')
+                              ],
+                              "render_kw": {'class': 'form-control'}
+
+                          },
+                          "roles": {
+                              "label": '角色',
+                              "widget": widgets.Select(),
+                              "validators": [
+                                  validators.DataRequired(message='角色不能为空'),
+                              ],
+                              "render_kw": {'class': 'form-control'}
+                          }
+                      })

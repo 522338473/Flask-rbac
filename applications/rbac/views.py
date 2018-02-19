@@ -46,11 +46,12 @@ def login():
     登录
     """
     if request.method == 'GET':
-        login_form = forms.LoginForm()
+        login_form = forms.UserForm()
         return render_template('login.html', login_form=login_form)
     else:
         login_form = forms.LoginForm(request.form)
         if not login_form.validate_on_submit():
+            print(login_form.errors)
             return render_template('login.html', login_form=login_form)
         else:
             username = login_form.data.get('username')
@@ -78,15 +79,11 @@ def logout():
 @rbac.route('/test')
 def test():
     # # 创建用户
-    # engine = create_engine('mysql+pymysql://{}:{}@{}:{}/{}?charset=utf8'.format(*sql_info))
-    # DBSession = sessionmaker(bind=engine)
-    # db_sess = DBSession()
     #
     # new_user = models.User(username='test', password='abc123')
     # db_sess.add(new_user)
     # db_sess.commit()
     #
-    # db_sess.close()
 
     return '测试'
 
@@ -102,7 +99,21 @@ def userinfo():
 
 @rbac.route('/userinfo/add', methods=['GET', 'POST'])
 def user_add():
-    return '添加用户或注册'
+    if request.method == 'GET':
+        user_form = forms.LoginForm()
+        return render_template('user_add.html', user_form=user_form)
+    else:
+        user_form = forms.LoginForm(request.form)
+        if not user_form.validate_on_submit():
+            return render_template('user_add.html', user_form=user_form)
+        else:
+            username = user_form.data.get('username')
+            password = user_form.data.get('password')
+            new_user = models.User(username=username, password=password)
+            db_sess.add(new_user)
+            db_sess.commit()
+
+            return '添加用户或注册'
 
 
 @rbac.route('/userinfo/edit/<int:id>', methods=['GET', 'POST'])

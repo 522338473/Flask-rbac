@@ -1,0 +1,29 @@
+{% extends 'has_menu_base.html' %}
+
+{% block title %}添加用户{% endblock %}
+
+{% block content %}
+    <form method="post" class="form-horizontal">
+        {{ user_form.csrf_token }}
+        <div class="form-group">
+            {{ user_form.username.label }}
+            <div>
+                {{ user_form.username }}
+            </div>
+            {{ user_form.username.errors[0] }}
+        </div>
+
+        <div class="form-group">
+            {{ user_form.password.label }}
+            <div>
+                {{ user_form.password }}
+            </div>
+            {{ user_form.password.errors[0] }}
+        </div>
+        <div>
+            {{ user_form.roles }}
+        </div>
+        <input type="submit" value="提交" class="btn btn-primary">
+
+    </form>
+{% endblock %}
