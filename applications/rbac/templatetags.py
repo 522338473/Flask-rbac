@@ -12,6 +12,11 @@ from . import rbac
 
 @rbac.context_processor
 def show_menu():
+    """
+    使用嵌套，惰性加载session中的perm_side_list，
+    避免在未登录的情况下抛出NoneType相关的异常
+    """
+
     def get_side_dict():
         current_url = request.path
         perm_side_list = session.get('PERM_SIDE_LIST')
