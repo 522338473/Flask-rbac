@@ -1,10 +1,14 @@
 from flask_script import Manager, Server
-from applications import create_app
+from flask_migrate import Migrate, MigrateCommand
+from applications import db, create_app
 
 app = create_app()
 
-# manager = Manager(app)  # type:Manager
-# manager.add_command("runserver", Server())
+migrate = Migrate(app, db)
+
+manager = Manager(app)
+manager.add_command("runserver", Server())
+manager.add_command("db", MigrateCommand)
 
 if __name__ == '__main__':
     # print(app.url_map)
@@ -13,4 +17,4 @@ if __name__ == '__main__':
     # print(app.config)
 
     # manager.run()
-    app.run(debug=True)
+    app.run()

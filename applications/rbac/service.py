@@ -1,16 +1,15 @@
-from flask import request, session
+from flask import session, current_app
 
 
 def init_permission(user_obj):
-    tmp_dict = {"id": user_obj.id,
-                "username": user_obj.username}
-    session["userinfo"] = tmp_dict
+    session[current_app.config['USER_INFO']] = {"id": user_obj.id, "username": user_obj.username}
 
     permissions_dict = {}
     for role in user_obj.roles:
         for perm in role.permissions:
-            if perm.id not in permissions_dict:
-                permissions_dict[perm.id] = {
+            perm_id = perm.id
+            if perm_id not in permissions_dict:
+                permissions_dict[perm_id] = {
                     "url_title": perm.title,
                     "url": perm.url,
                     "code": perm.code,
@@ -36,7 +35,7 @@ def init_permission(user_obj):
                                                           'url': perm_dict.get('url')})
             perm_info_dict[group_id]['codes'].append(perm_dict.get('code'))
 
-    session["PERM_INFO_DICT"] = perm_info_dict
+    session[current_app.config['PERM_INFO_DICT']] = perm_info_dict
 
     # 菜单展示相关信息
     # 从data_list中取一部分数据，用于生成侧边栏菜单
@@ -52,4 +51,4 @@ def init_permission(user_obj):
         }
         perm_side_list.append(tmp_dict)
 
-    session["PERM_SIDE_LIST"] = perm_side_list
+    session[current_app.config['PERM_SIDE_LIST']] = perm_side_list

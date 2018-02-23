@@ -26,8 +26,7 @@ class Auth(object):
         为模板添加可直接引用的变量
         :return: 返回一个字典，固定格式
         """
-        current_user = session.get('user')
-        return dict(current_user=current_user)
+        return dict(current_user=session.get(self.app.config['USER_INFO']))
 
     def check_valid_urls(self):
         """
@@ -35,7 +34,7 @@ class Auth(object):
         :return:匹配到白名单中的url，返回True
         """
         current_url = request.path
-        for url in self.app.config.get('VALID_URLS'):
+        for url in self.app.config['VALID_URLS']:
             re_url = '^{}$'.format(url)
             if re.match(re_url, current_url):
                 return True
@@ -46,7 +45,7 @@ class Auth(object):
         """
         if self.check_valid_urls():
             return None
-        if not session.get('userinfo'):
+        if not session.get(self.app.config['USER_INFO']):
             return redirect(url_for('rbac.login'))
 
     def check_permission(self):
@@ -60,11 +59,11 @@ class Auth(object):
         flag = False
         current_url = request.path
 
-        for urls_dict in session.get('PERM_INFO_DICT').values():
+        for urls_dict in session.get(self.app.config['PERM_INFO_DICT']).values():
             for url_info in urls_dict.get('urls_info'):
                 re_url = '^{}$'.format(url_info.get('url'))
                 if re.match(re_url, current_url):
-                    session['PERM_CODES_LIST'] = urls_dict.get('codes')
+                    session[self.app.config['PERM_CODES_LIST']] = urls_dict.get('codes')
                     flag = True
                     break
             if flag:

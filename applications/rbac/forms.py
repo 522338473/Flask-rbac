@@ -1,12 +1,12 @@
 from flask_wtf import FlaskForm
 from wtforms.ext.sqlalchemy.orm import model_form
-from wtforms import validators, Form
-from wtforms import widgets, StringField, PasswordField
+from wtforms import validators
+from wtforms import widgets
 
+from applications import db
 from . import models
-from .database import db_sess
 
-LoginForm = model_form(models.User, base_class=FlaskForm, db_session=db_sess, only=['username', 'password'],
+LoginForm = model_form(models.User, base_class=FlaskForm, db_session=db.session, only=['username', 'password'],
                        field_args={
                            "username": {
                                "label": '用户名',
@@ -28,7 +28,7 @@ LoginForm = model_form(models.User, base_class=FlaskForm, db_session=db_sess, on
                            }
                        })
 
-UserForm = model_form(models.User, base_class=FlaskForm, db_session=db_sess, exclude=['create_time'],
+UserForm = model_form(models.User, base_class=FlaskForm, db_session=db.session, exclude=['create_time'],
                       field_args={
                           "username": {
                               "label": '用户名',

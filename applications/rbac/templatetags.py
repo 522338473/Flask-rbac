@@ -1,5 +1,5 @@
 """
-给模板添加一个side_dict变量使用
+给模板添加一个公用函数get_side_dict
 """
 
 import copy

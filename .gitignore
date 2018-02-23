@@ -103,4 +103,5 @@ ENV/
 #本地数据相关
 *.sqlite3
 /.idea
+/migrations
 mysql_config.py

@@ -1,122 +1,108 @@
 import datetime
 
-from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, Integer, String, Text, DateTime
-from sqlalchemy import ForeignKey, UniqueConstraint, Index
-from sqlalchemy.orm import relationship, sessionmaker
-from sqlalchemy.schema import Table
-
-# 数据库的相关配置，自行添加格式如下的信息：sql_info = ['user','password','ip','port','数据库名']
-from applications.mysql_config import sql_info
-
-Base = declarative_base()
+from applications import db
 
 
-class Menu(Base):
+class Menu(db.Model):
     """
     菜单表
     """
     __tablename__ = 'menu'
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    title = Column(String(10))
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    title = db.Column(db.String(10))
 
     # 双向关联，用于跨表查询
-    perm_groups = relationship('PermissionGroup', backref='menu')
+    perm_groups = db.relationship('PermissionGroup', backref='menu')
 
     def __str__(self):
-        return self.title
+        return '<Menu %s>' % self.title
 
 
-class PermissionGroup(Base):
+class PermissionGroup(db.Model):
     """
     权限组表
     """
     __tablename__ = 'permissiongroup'
 
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    title = Column(String(10))
-    menu_id = Column(Integer, ForeignKey('menu.id'))
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    title = db.Column(db.String(10))
+    menu_id = db.Column(db.Integer, db.ForeignKey('menu.id'))
 
     # 双向关联，用于跨表查询
-    permissions = relationship('Permission', backref='perm_group')
+    permissions = db.relationship('Permission', backref='perm_group')
 
     def __str__(self):
-        return self.title
+        return '<PermissionGroup %s>' % self.title
 
 
 # 权限—角色关联表
-permission_role = Table('permission_role', Base.metadata,
-                        Column('permission_id', Integer, ForeignKey('permission.id')),
-                        Column('role_id', Integer, ForeignKey('role.id')))
+permission_role = db.Table('permission_role', db.metadata,
+                           db.Column('permission_id', db.Integer, db.ForeignKey('permission.id')),
+                           db.Column('role_id', db.Integer, db.ForeignKey('role.id')))
 
 
-class Permission(Base):
+class Permission(db.Model):
     """
     权限表
     """
     __tablename__ = 'permission'
 
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    title = Column(String(10))
-    url = Column(String(64))
-    menu_ref = Column(Integer, ForeignKey('permission.id'))  # 自关联
-    code = Column(String(10))
-    group_id = Column(Integer, ForeignKey('permissiongroup.id'))
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    title = db.Column(db.String(10))
+    url = db.Column(db.String(64))
+    menu_ref = db.Column(db.Integer, db.ForeignKey('permission.id'))  # 自关联
+    code = db.Column(db.String(10))
+    group_id = db.Column(db.Integer, db.ForeignKey('permissiongroup.id'))
 
     # 自关联声明
-    self_ref = relationship('Permission', remote_side=[id])
+    self_ref = db.relationship('Permission', remote_side=[id])
 
     # 多对多的双向关联，用于跨表查询
-    roles = relationship('Role', secondary=permission_role, backref='permissions')
+    roles = db.relationship('Role', secondary=permission_role, backref='permissions')
 
     def __str__(self):
-        return self.title
+        return '<Permission> %s' % self.title
 
 
 # 用户—角色关联表
-user_role = Table('user_role', Base.metadata,
-                  Column('user_id', Integer, ForeignKey('user.id')),
-                  Column('role_id', Integer, ForeignKey('role.id')))
+user_role = db.Table('user_role', db.metadata,
+                     db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
+                     db.Column('role_id', db.Integer, db.ForeignKey('role.id')))
 
 
-class Role(Base):
+class Role(db.Model):
     """
     角色表
     """
     __tablename__ = 'role'
 
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    name = Column(String(10))
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    name = db.Column(db.String(10))
 
     # 双向关联，用于跨表查询
-    users = relationship('User', secondary=user_role, backref='roles')
+    users = db.relationship('User', secondary=user_role, backref='roles')
 
     def __str__(self):
-        return self.name
+        return '<Role %s>' % self.name
 
 
-class User(Base):
+class User(db.Model):
     """
     用户信息表
     """
     __tablename__ = 'user'
 
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    username = Column(String(16))
-    password = Column(String(16))
-    create_time = Column(DateTime, default=datetime.datetime.now)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    username = db.Column(db.String(16))
+    password = db.Column(db.String(100))
+    create_time = db.Column(db.DateTime, default=datetime.datetime.now)
+
+    def check_password(self, password):
+        from werkzeug.security import check_password_hash
+        return check_password_hash(self.password, password)
 
     def __str__(self):
-        return self.username
-
-# engine = create_engine('mysql+pymysql://{}:{}@{}:{}/{}?charset=utf8'.format(*sql_info))
-
-# 在数据库中创建表
-# Base.metadata.create_all(engine)
-# 在数据库中删除表
-# Base.metadata.drop_all(engine)
-
+        return '<User %s>' % self.username
 
 # 笔记：
 # 一对一关联的时候，在relationship里设置uselist为False

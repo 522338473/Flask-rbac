@@ -1,19 +1,20 @@
 """
 测试rbac
 """
-from flask import request, session, redirect, url_for, render_template
-from sqlalchemy import and_
+from flask import request, session, current_app
+from flask import redirect, url_for, render_template
 
+from applications import db
 from . import rbac  # 蓝图
 from . import models, forms
 from .service import init_permission
-from .database import db_sess
-
-# 数据库的相关配置，自行添加格式如下的信息：sql_info = ['user','password','ip','port','数据库名']
-from applications.mysql_config import sql_info
 
 
 class Codes(object):
+    """
+    封装session中权限的codes信息，便于在模板中调用
+    """
+
     def __init__(self, codes_list):
         self.codes_list = codes_list
 
@@ -32,9 +33,12 @@ class Codes(object):
 
 @rbac.route('/')
 def index():
-    userinfo = session.get('userinfo')
+    """
+    主页
+    """
+    userinfo = session.get(current_app.config["USER_INFO"])
     if userinfo:
-        urls_info = session.get('PERM_SIDE_LIST')
+        urls_info = session.get(current_app.config["PERM_SIDE_LIST"])
         return render_template('index.html', urls_info=urls_info)
     else:
         return render_template('index.html')
@@ -51,20 +55,23 @@ def login():
     else:
         login_form = forms.LoginForm(request.form)
         if not login_form.validate_on_submit():
-            print(login_form.errors)
             return render_template('login.html', login_form=login_form)
         else:
             username = login_form.data.get('username')
             password = login_form.data.get('password')
 
-            user_obj = db_sess.query(models.User).filter(
-                and_(models.User.username == username, models.User.password == password)).first()
+            user_obj = db.session.query(models.User).filter_by(username=username).first()
 
-            if not user_obj:
-                return redirect(url_for('rbac.login'))
+            if user_obj:
+                if user_obj.check_password(password):
+                    init_permission(user_obj)
+                    return redirect(url_for('rbac.index'))
+                else:
+                    login_form.password.errors.append('密码错误')
+                    return render_template('login.html', login_form=login_form)
             else:
-                init_permission(user_obj)
-                return redirect(url_for('rbac.index'))
+                login_form.username.errors.append('用户不存在')
+                return render_template('login.html', login_form=login_form)
 
 
 @rbac.route('/logout')
@@ -78,12 +85,17 @@ def logout():
 
 @rbac.route('/test')
 def test():
-    # # 创建用户
-    #
-    # new_user = models.User(username='test', password='abc123')
-    # db_sess.add(new_user)
-    # db_sess.commit()
-    #
+    # 创建用户
+    # from werkzeug.security import generate_password_hash
+    # new_user = models.User(username='test', password=generate_password_hash('abc123'))
+    # db.session.add(new_user)
+    # db.session.commit()
+
+    # 修改密码
+    # objs = db.session.query(models.User).all()
+    # for obj in objs:
+    #     obj.password = generate_password_hash('abc123')
+    # db.session.commit()
 
     return '测试'
 
@@ -91,8 +103,8 @@ def test():
 ###### 用户相关 ######
 @rbac.route('/userinfo')
 def userinfo():
-    codes = Codes(session.get('PERM_CODES_LIST'))
-    user_list = db_sess.query(models.User).all()
+    codes = Codes(session.get(current_app.config["PERM_CODES_LIST"]))
+    user_list = db.session.query(models.User).all()
     res = render_template('userinfo.html', codes=codes, user_list=user_list)
     return res
 
@@ -110,8 +122,8 @@ def user_add():
             username = user_form.data.get('username')
             password = user_form.data.get('password')
             new_user = models.User(username=username, password=password)
-            db_sess.add(new_user)
-            db_sess.commit()
+            db.session.add(new_user)
+            db.session.commit()
 
             return '添加用户或注册'
 
@@ -128,8 +140,8 @@ def user_edit(id):
 
 @rbac.route('/userinfo/del/<int:id>')
 def user_del(id):
-    # db_sess.query(models.User).filter_by(id=id).delete()
-    # db_sess.commit()
+    # db.session.query(models.User).filter_by(id=id).delete()
+    # db.session.commit()
     # return redirect(url_for('rbac.userinfo'))
 
     return '删除用户'
