@@ -140,11 +140,11 @@ def user_edit(id):
 
 @rbac.route('/userinfo/del/<int:id>')
 def user_del(id):
-    # db.session.query(models.User).filter_by(id=id).delete()
-    # db.session.commit()
-    # return redirect(url_for('rbac.userinfo'))
+    db.session.query(models.User).filter_by(id=id).delete()
+    db.session.commit()
+    return redirect(url_for('rbac.userinfo'))
 
-    return '删除用户'
+    # return '删除用户'
 
 
 ###### 订单相关 ######

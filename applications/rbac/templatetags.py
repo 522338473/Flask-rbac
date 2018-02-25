@@ -5,7 +5,7 @@
 import copy
 import re
 
-from flask import request, session
+from flask import request, session, current_app
 
 from . import rbac
 
@@ -19,7 +19,7 @@ def show_menu():
 
     def get_side_dict():
         current_url = request.path
-        perm_side_list = session.get('PERM_SIDE_LIST')
+        perm_side_list = session.get(current_app.config['PERM_SIDE_LIST'])
 
         # (1) 取出所有可以做“菜单项”的权限URL
         perm_menu_dict = {}
